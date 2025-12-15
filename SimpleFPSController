@@ -1,0 +1,70 @@
+using UnityEngine;
+
+[RequireComponent(typeof(CharacterController))]
+public class SimpleFPSController : MonoBehaviour
+{
+    public float moveSpeed = 5f;
+    public float mouseSensitivity = 2f;
+    public float gravity = -9.81f;
+    public Transform cameraTransform;   // Main Camera
+public Animator armsAnimator;
+
+    CharacterController controller;
+    Vector3 velocity;
+    float cameraPitch = 0f; // dik baxış üçün
+
+    void Awake()
+    {
+        controller = GetComponent<CharacterController>();
+        if (cameraTransform == null && Camera.main != null)
+            cameraTransform = Camera.main.transform;
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
+    void Update()
+    {
+        Look();
+        Move();
+    }
+
+    void Look()
+    {
+        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
+        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+
+        // Yalnız kapsulu yatay fırlat
+        transform.Rotate(Vector3.up * mouseX);
+
+        // Kameranı şaquli fırlat (baş yuxarı-aşağı)
+        cameraPitch -= mouseY;
+        cameraPitch = Mathf.Clamp(cameraPitch, -80f, 80f);
+      
+      cameraTransform.localRotation = Quaternion.Euler(cameraPitch, 0f, 0f);
+
+      
+    }
+
+    void Move()
+    {
+        bool isGrounded = controller.isGrounded;
+        if (isGrounded && velocity.y < 0)
+            velocity.y = -1f;
+
+        float h = Input.GetAxis("Horizontal");   // A/D
+        float v = Input.GetAxis("Vertical");     // W/S
+
+        Vector3 move = transform.right * h + transform.forward * v;
+        if (move.magnitude > 1f) move.Normalize();
+
+        controller.Move(move * moveSpeed * Time.deltaTime);
+
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
+        bool isWalking = move.magnitude > 0.1f;
+if (armsAnimator != null)
+    armsAnimator.SetBool("isWalking", isWalking);
+
+    }
+}
