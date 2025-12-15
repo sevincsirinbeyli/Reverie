@@ -1,0 +1,23 @@
+using UnityEngine;
+
+public class ZombieSpawner : MonoBehaviour
+{
+    public GameObject zombiePrefab;
+    public Transform spawnPoint;
+    public int enemyCount = 4;
+    public float spawnRadius = 3f;
+
+    void Start()
+    {
+        for (int i = 0; i < enemyCount; i++)
+        {
+            Vector3 offset = Random.insideUnitSphere * spawnRadius;
+            offset.y = 0f;
+
+            Vector3 spawnPos = spawnPoint.position + offset;
+            spawnPos.y = spawnPoint.position.y;   // <-- Keep the original y position
+
+            Instantiate(zombiePrefab, spawnPos, Quaternion.identity);
+        }
+    }
+}
