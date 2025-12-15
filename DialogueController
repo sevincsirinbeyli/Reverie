@@ -1,0 +1,56 @@
+using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;   
+
+
+public class DialogueController : MonoBehaviour
+{
+    public TextMeshProUGUI dialogueText;
+
+    [TextArea(2, 4)]
+    public string[] lines;
+
+    public float typingSpeed = 0.03f;
+
+    int index = 0;
+    bool isTyping = false;
+
+    void Start()
+    {
+        ShowLine(0);
+    }
+
+    void Update()
+    {
+        if (Input.anyKeyDown && !isTyping)
+        {
+            index++;
+         
+     
+
+if (index < lines.Length)
+    ShowLine(index);
+else
+    SceneManager.LoadScene("mainlevel");
+
+    }
+    }
+
+    void ShowLine(int i)
+    {
+        StopAllCoroutines();
+        StartCoroutine(TypeLine(lines[i]));
+    }
+
+    System.Collections.IEnumerator TypeLine(string line)
+    {
+        isTyping = true;
+        dialogueText.text = "";
+        foreach (char c in line)
+        {
+            dialogueText.text += c;
+            yield return new WaitForSeconds(typingSpeed);
+        }
+        isTyping = false;
+    }
+}
