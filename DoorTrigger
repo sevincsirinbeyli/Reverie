@@ -1,0 +1,31 @@
+using UnityEngine;
+
+public class DoorTrigger : MonoBehaviour
+{
+    public Transform doorHinge;
+    public float openAngle = -90f;
+    public float closeAngle = 0f;
+    public float openSpeed = 3f;
+
+    bool isOpen = false;
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            isOpen = true;
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player"))
+            isOpen = false;
+    }
+
+    void Update()
+    {
+        float targetAngle = isOpen ? openAngle : closeAngle;
+        Vector3 current = doorHinge.localEulerAngles;
+        float angle = Mathf.LerpAngle(current.y, targetAngle, Time.deltaTime * openSpeed);
+        doorHinge.localEulerAngles = new Vector3(current.x, angle, current.z);
+    }
+}
