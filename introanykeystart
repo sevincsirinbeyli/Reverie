@@ -1,0 +1,18 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class IntroAnyKeyToStart : MonoBehaviour
+{
+    [SerializeField] private string gameSceneName = "GameStart";
+
+
+    private bool hasLoaded = false;
+
+    void Update()
+    {
+        if (!hasLoaded && Input.anyKeyDown)
+        {
+            hasLoaded = true;
+            SceneManager.LoadScene(gameSceneName);
+        }
+    }
