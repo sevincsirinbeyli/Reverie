@@ -1,0 +1,73 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
+
+public class LeakZoneLogic : MonoBehaviour
+{
+    public string nextSceneName = "Level3_Forest";
+    public float deathTime = 4f;
+
+    public TextMeshProUGUI warningText;
+    [TextArea] public string message = "Simulation leak detected. Get out.";
+
+    bool playerInside = false;
+    float timer = 0f;
+
+    void Start()
+    {
+        if (warningText != null)
+            warningText.text = "";
+    }
+
+    void Update()
+    {
+        if (!playerInside) return;
+
+        timer += Time.deltaTime;
+
+        if (timer >= deathTime)
+        {
+            Scene current = SceneManager.GetActiveScene();
+            SceneManager.LoadScene(current.name);
+        }
+    }
+
+    // 
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        Debug.Log("PLAYER ENTERED TOXIC ZONE");
+
+        playerInside = true;
+        timer = 0f;
+
+        if (warningText != null)
+            warningText.text = message;
+    }
+
+    // UPDATE
+    void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        Debug.Log("PLAYER STAYING IN TOXIC ZONE");
+    }
+
+    //  UPDATE 
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        if (timer < deathTime)
+        {
+            SceneManager.LoadScene(nextSceneName);
+        }
+
+        playerInside = false;
+        timer = 0f;
+
+        if (warningText != null)
+            warningText.text = "";
+    }
+}
