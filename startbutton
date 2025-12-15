@@ -1,0 +1,11 @@
+using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class StartButton : MonoBehaviour
+{
+    // GameStart sahnesindeki Start butonu
+    public void LoadGameAbout()
+    {
+        SceneManager.LoadScene("GameAbout");
+    }
+}
