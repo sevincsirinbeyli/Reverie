@@ -1,0 +1,60 @@
+using System.Collections;
+using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
+
+
+public class ObjectiveTrigger : MonoBehaviour
+{
+    public TextMeshProUGUI objectiveText;
+    [TextArea] public string message = "Simulation leak detected. Get out.";
+    public float timeLimit = 4f;
+
+    private Coroutine deathCoroutine;
+    private bool playerInside = false;
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        playerInside = true;
+        objectiveText.text = message;
+
+        // 4 san after player dies
+        deathCoroutine = StartCoroutine(DeathTimer(other.gameObject));
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (!other.CompareTag("Player")) return;
+
+        playerInside = false;
+        objectiveText.text = "";
+
+        // time stopped 
+        if (deathCoroutine != null)
+        {
+            StopCoroutine(deathCoroutine);
+            deathCoroutine = null;
+        }
+
+        // Player run → Level3 starts
+        SceneManager.LoadScene("Level3_Forest");
+    }
+
+    IEnumerator DeathTimer(GameObject player)
+    {
+        yield return new WaitForSeconds(timeLimit);
+
+        if (playerInside)
+        {
+            // player dies
+            Debug.Log("Player died!");
+
+            // Örnek ölüm:
+            // player.GetComponent<PlayerHealth>().Die();
+            // veya
+            SceneManager.LoadScene("Level1");
+        }
+    }
+}
